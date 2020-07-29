@@ -1,6 +1,5 @@
 package com.teqtron.wishlist;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,25 +16,25 @@ public class WishListController {
     @Autowired
     private WishListService wishListService;
     
-    /* 
+    /*  HTTP GET Request
         This method will be called when the user wants to see all the items under his
-        wish list category. User ID is passed as a parameter to this method.
-        GET Service
+        wish list category. User ID is passed as a parameter to this method.       
     */
     @RequestMapping("/user/{userId}/item")
     public @ResponseBody ResponseEntity<?> getWishLists(@PathVariable int userId) {
-        List<ProductModel> products = null;
+        
+        String StringOfProducts = "";
         try{
-         products = wishListService.getWishLists(userId);
+            StringOfProducts = wishListService.getWishLists(userId);
         }
         catch(Exception e){
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
         }        
-        if(products.size() != 0)
-            return new ResponseEntity<List<ProductModel>>(products, HttpStatus.OK);
-        else{            
+        if(StringOfProducts == null)
             return new ResponseEntity<String>("User does not exist", HttpStatus.NOT_FOUND);
-        }
+        else
+            return new ResponseEntity<String>(StringOfProducts, HttpStatus.OK);
+
     }
 
     /* 
@@ -49,8 +48,7 @@ public class WishListController {
         try{
             result = wishListService.deleteWishList(userId, itemNumber);    
          }
-         catch(Exception e){
-             //ResponseEntity.status(HttpStatus.NOT_FOUND).body("No content");
+         catch(Exception e){             
             return new ResponseEntity<String>("Internal server error!",HttpStatus.INTERNAL_SERVER_ERROR); 
          }
          if(result == null)
